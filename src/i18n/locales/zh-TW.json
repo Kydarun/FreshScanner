@@ -1,0 +1,27 @@
+{
+  "appTitle": "鮮度掃描 (FreshScan)",
+  "cameraError": "無法存取相機，請檢查權限。",
+  "takePhoto": "拍照",
+  "retake": "重拍",
+  "checkFreshness": "檢測新鮮度",
+  "analyzing": "正在分析...",
+  "language": "語言",
+  "en": "English",
+  "zh-CN": "简体中文",
+  "zh-TW": "繁體中文",
+  "analyzeError": "分析圖片失敗，請重試。",
+  "capturedFood": "拍攝的食物",
+  "login": "登入",
+  "logout": "登出",
+  "history": "歷史記錄",
+  "historyDetails": "掃描詳情",
+  "noHistory": "暫無掃描記錄。",
+  "loading": "加載中...",
+  "status": {
+    "FRESH": "非常新鮮",
+    "EXPIRING_SOON": "即將過期",
+    "SPOILED": "已變質",
+    "NOT_FOOD": "非食物",
+    "UNCLEAR": "圖像不清晰"
+  }
+}

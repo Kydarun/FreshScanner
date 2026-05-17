@@ -1,0 +1,27 @@
+{
+  "appTitle": "FreshScan",
+  "cameraError": "Unable to access camera. Please check permissions.",
+  "takePhoto": "Take photo",
+  "retake": "Retake",
+  "checkFreshness": "Check Freshness",
+  "analyzing": "Analyzing...",
+  "language": "Language",
+  "en": "English",
+  "zh-CN": "简体中文",
+  "zh-TW": "繁體中文",
+  "analyzeError": "Failed to analyze the image. Please try again.",
+  "capturedFood": "Captured food",
+  "login": "Login",
+  "logout": "Logout",
+  "history": "History",
+  "historyDetails": "Scan Details",
+  "noHistory": "No scans yet.",
+  "loading": "Loading...",
+  "status": {
+    "FRESH": "Fresh",
+    "EXPIRING_SOON": "Expiring Soon",
+    "SPOILED": "Spoiled",
+    "NOT_FOOD": "Not Food",
+    "UNCLEAR": "Unclear Image"
+  }
+}

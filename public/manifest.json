@@ -1,0 +1,16 @@
+{
+  "name": "FreshScan AI",
+  "short_name": "FreshScan",
+  "description": "AI-powered food freshness scanner.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
