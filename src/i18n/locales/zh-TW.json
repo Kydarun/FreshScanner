@@ -17,6 +17,7 @@
   "logout": "登出",
   "history": "歷史記錄",
   "historyDetails": "掃描詳情",
+  "itemDetails": "物品詳情",
   "noHistory": "暫無掃描記錄。",
   "loading": "加載中...",
   "status": {
@@ -40,6 +41,9 @@
   },
   "unsafeStorage": "不適合在此環境保存",
   "expiresOn": "過期時間: ",
+  "expiredOn": "已過期: ",
+  "daysLeft": "還剩 {{count}} 天",
+  "storageMethod": "保存方式",
   "storage": {
     "pantry": "常溫",
     "fridge": "冷藏",
@@ -67,5 +71,7 @@
   "portalInitiationError": "無法啟動計費中心會話。",
   "checkoutInitiationError": "無法啟動結帳服務。",
   "checkoutTimeoutError": "結帳頁面加載超時。請檢查網絡或重試。",
-  "portalTimeoutError": "計費中心加載超時。請核對您的 Stripe 帳單配置。"
+  "portalTimeoutError": "計費中心加載超時。請核對您的 Stripe 帳單配置。",
+  "takeOut": "取出",
+  "removedFromFridgeSuccess": "已從虛擬冰箱移出！"
 }

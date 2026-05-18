@@ -24,6 +24,10 @@ export default function VirtualFridgeModal({ isOpen, onClose }: VirtualFridgeMod
     updateScan({ id, updates: { current_storage: storage } });
   };
 
+  const handleRemoveFromFridge = (id: string) => {
+    updateScan({ id, updates: { in_virtual_fridge: false } });
+  };
+
   const handleClose = () => {
     setSelectedRecord(null);
     onClose();
@@ -47,7 +51,7 @@ export default function VirtualFridgeModal({ isOpen, onClose }: VirtualFridgeMod
             )}
             <div>
               <h2 className="text-xl font-bold text-white leading-none">
-                {selectedRecord ? t('historyDetails') : t('virtualFridgeTitle')}
+                {selectedRecord ? t('itemDetails') : t('virtualFridgeTitle')}
               </h2>
               {!selectedRecord && (
                 <p className="text-xs text-slate-400 mt-1.5 leading-none">{t('itemsSaved', { count: fridgeItems.length })}</p>
@@ -68,6 +72,7 @@ export default function VirtualFridgeModal({ isOpen, onClose }: VirtualFridgeMod
             <HistoryDetail
               record={fridgeItems.find((r) => r.id === selectedRecord.id) || selectedRecord}
               onToggleStorage={handleToggleStorage}
+              onRemoveFromFridge={handleRemoveFromFridge}
               showStorageDetails={true}
             />
           ) : fridgeItems.length === 0 ? (

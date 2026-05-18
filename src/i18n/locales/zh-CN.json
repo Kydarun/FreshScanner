@@ -17,6 +17,7 @@
   "logout": "登出",
   "history": "历史记录",
   "historyDetails": "扫描详情",
+  "itemDetails": "物品详情",
   "noHistory": "暂无扫描记录。",
   "loading": "加载中...",
   "status": {
@@ -40,6 +41,9 @@
   },
   "unsafeStorage": "不适合在此环境保存",
   "expiresOn": "过期时间: ",
+  "expiredOn": "已过期: ",
+  "daysLeft": "还剩 {{count}} 天",
+  "storageMethod": "保存方式",
   "storage": {
     "pantry": "常温",
     "fridge": "冷藏",
@@ -67,5 +71,7 @@
   "portalInitiationError": "无法启动计费中心会话。",
   "checkoutInitiationError": "无法启动结账服务。",
   "checkoutTimeoutError": "结账页面加载超时。请检查网络或重试。",
-  "portalTimeoutError": "计费中心加载超时。请核对您的 Stripe 账单配置。"
+  "portalTimeoutError": "计费中心加载超时。请核对您的 Stripe 账单配置。",
+  "takeOut": "取出",
+  "removedFromFridgeSuccess": "已从虚拟冰箱移出！"
 }

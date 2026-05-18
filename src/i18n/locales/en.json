@@ -17,6 +17,7 @@
   "logout": "Logout",
   "history": "History",
   "historyDetails": "Scan Details",
+  "itemDetails": "Item Details",
   "noHistory": "No scans yet.",
   "loading": "Loading...",
   "status": {
@@ -40,6 +41,9 @@
   },
   "unsafeStorage": "Unsafe in this storage",
   "expiresOn": "Expires: ",
+  "expiredOn": "Expired: ",
+  "daysLeft": "{{count}} days left",
+  "storageMethod": "Storage Method",
   "storage": {
     "pantry": "Pantry",
     "fridge": "Fridge",
@@ -67,5 +71,7 @@
   "portalInitiationError": "Failed to initiate billing portal session.",
   "checkoutInitiationError": "Failed to initiate checkout.",
   "checkoutTimeoutError": "Checkout portal session timed out. Please check your network or try again.",
-  "portalTimeoutError": "Billing portal session timed out. Please verify your Stripe configuration."
+  "portalTimeoutError": "Billing portal session timed out. Please verify your Stripe configuration.",
+  "takeOut": "Take Out",
+  "removedFromFridgeSuccess": "Removed from Virtual Fridge!"
 }

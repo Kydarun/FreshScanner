@@ -62,6 +62,7 @@ export default function VirtualFridgeCard({ item, onToggleStorage, onClick }: Vi
             <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-emerald-300 transition-colors truncate min-w-0">
               {item.identified_item}
             </h3>
+            
             {/* Status Badge */}
             <div className={`px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold shrink-0 ${
               isExpired ? 'bg-red-500/20 text-red-400' : isExpiringSoon ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'
