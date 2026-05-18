@@ -1,4 +1,5 @@
-import { Refrigerator } from "lucide-react";
+import { useState } from "react";
+import { Refrigerator, Info } from "lucide-react";
 import { AnalysisResult } from "@/types";
 import { STATUS_CONFIG } from "@/config/status";
 
@@ -9,6 +10,7 @@ interface AnalysisResultCardProps {
 }
 
 export default function AnalysisResultCard({ analysisResult, onAddToFridge, t }: AnalysisResultCardProps) {
+  const [showFridgeInfo, setShowFridgeInfo] = useState(false);
   const statusConfig = STATUS_CONFIG[analysisResult.freshness_status] || STATUS_CONFIG['SPOILED'];
   const StatusIcon = statusConfig.Icon;
 
@@ -41,13 +43,28 @@ export default function AnalysisResultCard({ analysisResult, onAddToFridge, t }:
       {/* Add to Fridge Button */}
       {analysisResult.freshness_status !== 'NOT_FOOD' && analysisResult.freshness_status !== 'UNCLEAR' && (
         <div className="mt-1 pt-3 border-t border-white/10">
-          <button
-            onClick={onAddToFridge}
-            className="w-full bg-sky-500/20 hover:bg-sky-500/30 text-sky-400 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors border border-sky-500/30"
-          >
-            <Refrigerator className="w-5 h-5" />
-            {t('addToFridge')}
-          </button>
+          <div className="relative w-full">
+            <button
+              onClick={onAddToFridge}
+              className="w-full bg-sky-500/20 hover:bg-sky-500/30 text-sky-400 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors border border-sky-500/30 pr-12"
+            >
+              <Refrigerator className="w-5 h-5" />
+              {t('addToFridge')}
+            </button>
+            <button 
+              onClick={(e) => { e.stopPropagation(); setShowFridgeInfo(!showFridgeInfo); }} 
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-sky-500/60 hover:text-sky-400 transition-colors"
+              aria-label="Info"
+            >
+              <Info className="w-5 h-5" />
+            </button>
+          </div>
+          
+          {showFridgeInfo && (
+            <div className="mt-3 text-xs text-slate-300 bg-sky-950/40 p-3 rounded-lg border border-sky-500/20 leading-relaxed animate-in fade-in slide-in-from-top-1">
+              {t('fridgeInfo')}
+            </div>
+          )}
         </div>
       )}
     </div>

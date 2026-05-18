@@ -56,5 +56,6 @@
   "restorePurchases": "Restore Purchases",
   "pricePerMonth": "{{price}} / mo",
   "privacyPolicy": "Privacy Policy",
-  "termsOfService": "Terms of Service"
+  "termsOfService": "Terms of Service",
+  "fridgeInfo": "Save this item to your Virtual Fridge to keep track of its shelf-life and get smart reminders before it spoils."
 }

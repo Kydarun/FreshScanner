@@ -56,5 +56,6 @@
   "restorePurchases": "恢复购买",
   "pricePerMonth": "{{price}} / 月",
   "privacyPolicy": "隐私政策",
-  "termsOfService": "服务条款"
+  "termsOfService": "服务条款",
+  "fridgeInfo": "将此物品保存到虚拟冰箱中，以便追踪保质期并在过期前获得智能提醒。"
 }
