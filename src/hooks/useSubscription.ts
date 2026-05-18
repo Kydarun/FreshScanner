@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRepository } from "@/services/UserRepository";
-import { remoteConfig, db } from "@/config/firebase";
+import { remoteConfig, db, functions } from "@/config/firebase";
 import { getNumber } from "firebase/remote-config";
 import { collection, query, where, getDocs, addDoc, onSnapshot } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 import { useScanHistory } from "@/hooks/useScanHistory";
 import { useTranslation } from "react-i18next";
 
@@ -135,51 +136,35 @@ export function useSubscription() {
     setIsManagingSubscription(true);
 
     try {
-      const portalRef = collection(db, 'users', user.uid, 'portal_sessions');
-      const docRef = await addDoc(portalRef, {
+      const createPortalLink = httpsCallable(
+        functions,
+        'ext-firestore-stripe-payments-createPortalLink'
+      );
+      
+      const response = await createPortalLink({
         returnUrl: window.location.origin,
       });
-
-      // Listen for the extension to populate the URL
-      let unsubscribe: () => void;
-      let isTimedOut = false;
-      const timeoutId = setTimeout(() => {
-        isTimedOut = true;
-        if (unsubscribe) unsubscribe();
-        setIsManagingSubscription(false);
-        setToast({ message: t('portalTimeoutError', 'Billing portal session timed out. Please verify your Stripe configuration.'), type: 'error' });
-      }, 15000);
-
-      unsubscribe = onSnapshot(
-        docRef,
-        (snap) => {
-          if (isTimedOut) return;
-          const data = snap.data();
-          if (data?.url) {
-            clearTimeout(timeoutId);
-            unsubscribe();
-            window.location.assign(data.url);
-          }
-          if (data?.error) {
-            clearTimeout(timeoutId);
-            unsubscribe();
-            setIsManagingSubscription(false);
-            setToast({ message: `Portal Error: ${data.error.message}`, type: 'error' });
-          }
-        },
-        (error) => {
-          if (isTimedOut) return;
-          clearTimeout(timeoutId);
-          unsubscribe();
-          setIsManagingSubscription(false);
-          console.error("Portal Snapshot Error:", error);
-          setToast({ message: t('portalListenerError', 'Failed to load billing portal. Please check your network or try again.'), type: 'error' });
-        }
-      );
-    } catch (err) {
-      console.error(err);
+      
+      const data = response.data as { url: string };
+      if (data?.url) {
+        window.location.assign(data.url);
+      } else {
+        throw new Error("No URL returned from billing portal creation.");
+      }
+    } catch (err: any) {
+      console.error("Billing portal initiation error:", err);
       setIsManagingSubscription(false);
-      setToast({ message: t('portalInitiationError', 'Failed to initiate billing portal session'), type: 'error' });
+      
+      // Handle the "not found" error elegantly in case instance ID is different
+      let errorMsg = err.message || t('portalInitiationError', 'Failed to initiate billing portal session');
+      if (err.code === 'not-found') {
+        errorMsg = "Billing portal function not found. Please verify your Stripe extension instance ID is correct.";
+      }
+      
+      setToast({ 
+        message: errorMsg, 
+        type: 'error' 
+      });
     }
   };
 
