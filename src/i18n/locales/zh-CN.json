@@ -65,5 +65,7 @@
   "portalListenerError": "无法加载计费中心。请检查网络或重试。",
   "checkoutListenerError": "无法加载结账页面。请检查网络或重试。",
   "portalInitiationError": "无法启动计费中心会话。",
-  "checkoutInitiationError": "无法启动结账服务。"
+  "checkoutInitiationError": "无法启动结账服务。",
+  "checkoutTimeoutError": "结账页面加载超时。请检查网络或重试。",
+  "portalTimeoutError": "计费中心加载超时。请核对您的 Stripe 账单配置。"
 }

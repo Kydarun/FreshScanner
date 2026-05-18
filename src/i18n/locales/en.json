@@ -65,5 +65,7 @@
   "portalListenerError": "Failed to load billing portal. Please check your network or try again.",
   "checkoutListenerError": "Failed to load checkout portal. Please check your network or try again.",
   "portalInitiationError": "Failed to initiate billing portal session.",
-  "checkoutInitiationError": "Failed to initiate checkout."
+  "checkoutInitiationError": "Failed to initiate checkout.",
+  "checkoutTimeoutError": "Checkout portal session timed out. Please check your network or try again.",
+  "portalTimeoutError": "Billing portal session timed out. Please verify your Stripe configuration."
 }

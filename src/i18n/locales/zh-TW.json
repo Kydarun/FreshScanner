@@ -65,5 +65,7 @@
   "portalListenerError": "無法加載計費中心。請檢查網絡或重試。",
   "checkoutListenerError": "無法加載結帳頁面。請檢查網絡或重試。",
   "portalInitiationError": "無法啟動計費中心會話。",
-  "checkoutInitiationError": "無法啟動結帳服務。"
+  "checkoutInitiationError": "無法啟動結帳服務。",
+  "checkoutTimeoutError": "結帳頁面加載超時。請檢查網絡或重試。",
+  "portalTimeoutError": "計費中心加載超時。請核對您的 Stripe 帳單配置。"
 }

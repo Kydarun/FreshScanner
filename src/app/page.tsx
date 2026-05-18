@@ -3,8 +3,6 @@
 import { useRef, useState, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { collection, addDoc, onSnapshot } from "firebase/firestore";
-import { db } from "@/config/firebase";
 import { useCamera } from "@/hooks/useCamera";
 import { useScanHistory } from "@/hooks/useScanHistory";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,14 +26,24 @@ export default function Home() {
 
   const { stream, cameraError, capturedImage, capturePhoto, retakePhoto } = useCamera();
   const { addScan } = useScanHistory();
-  const { isPro, canScan, scansRemaining, trackScan, canAddToFridge, loading: subscriptionLoading } = useSubscription();
+  const { 
+    isPro, 
+    canScan, 
+    scansRemaining, 
+    trackScan, 
+    canAddToFridge, 
+    loading: subscriptionLoading,
+    toast,
+    isManagingSubscription,
+    upgrade,
+    manageSubscription
+  } = useSubscription();
   const { updateScan } = useScanHistory();
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [currentScanId, setCurrentScanId] = useState<string | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isFridgeOpen, setIsFridgeOpen] = useState(false);
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
-  const [isManagingSubscription, setIsManagingSubscription] = useState(false);
 
   // Bind the media stream to the video element
   useEffect(() => {
@@ -95,99 +103,31 @@ export default function Home() {
     setIsFridgeOpen(true); // Automatically open fridge to show it was added!
   };
 
-  const handleUpgrade = async () => {
-    if (!user) {
-      alert(t('loginRequired', 'Please log in to upgrade to Pro.'));
-      return;
-    }
-
-    try {
-      const checkoutRef = collection(db, 'users', user.uid, 'checkout_sessions');
-      const docRef = await addDoc(checkoutRef, {
-        price: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID || 'price_placeholder',
-        success_url: window.location.origin,
-        cancel_url: window.location.origin,
-      });
-
-      // Listen for the extension to populate the URL
-      const unsubscribe = onSnapshot(
-        docRef,
-        (snap) => {
-          const data = snap.data();
-          if (data?.url) {
-            unsubscribe();
-            window.location.assign(data.url);
-          }
-          if (data?.error) {
-            unsubscribe();
-            alert(`Checkout Error: ${data.error.message}`);
-          }
-        },
-        (error) => {
-          unsubscribe();
-          console.error("Checkout Snapshot Error:", error);
-          alert(t('checkoutListenerError', 'Failed to load checkout portal. Please check your network or try again.'));
-        }
-      );
-    } catch (err) {
-      console.error(err);
-      alert(t('checkoutInitiationError', 'Failed to initiate checkout'));
-    }
-  };
-
-  const handleManageSubscription = async () => {
-    if (!user) return;
-    setIsManagingSubscription(true);
-
-    try {
-      const portalRef = collection(db, 'users', user.uid, 'portal_sessions');
-      const docRef = await addDoc(portalRef, {
-        returnUrl: window.location.origin,
-      });
-
-      // Listen for the extension to populate the URL
-      const unsubscribe = onSnapshot(
-        docRef,
-        (snap) => {
-          const data = snap.data();
-          if (data?.url) {
-            unsubscribe();
-            window.location.assign(data.url);
-          }
-          if (data?.error) {
-            unsubscribe();
-            setIsManagingSubscription(false);
-            alert(`Portal Error: ${data.error.message}`);
-          }
-        },
-        (error) => {
-          unsubscribe();
-          setIsManagingSubscription(false);
-          console.error("Portal Snapshot Error:", error);
-          alert(t('portalListenerError', 'Failed to load billing portal. Please check your network or try again.'));
-        }
-      );
-    } catch (err) {
-      console.error(err);
-      setIsManagingSubscription(false);
-      alert(t('portalInitiationError', 'Failed to initiate billing portal session'));
-    }
-  };
-
   const isScanning = analyzeMutation.isPending;
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center p-4 relative">
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 animate-toast-in pointer-events-none">
+          <div className={`flex items-center gap-3 px-6 py-3.5 rounded-full border shadow-2xl ${
+            toast.type === 'error' ? 'border-red-500/30 bg-red-950/80 backdrop-blur-xl' : 'border-emerald-500/30 bg-emerald-950/80 backdrop-blur-xl'
+          }`}>
+            <AlertCircle className={`w-5 h-5 shrink-0 ${toast.type === 'error' ? 'text-red-400' : 'text-emerald-400'}`} />
+            <span className="text-sm font-medium text-slate-100 whitespace-nowrap">{toast.message}</span>
+          </div>
+        </div>
+      )}
       <Header 
         onOpenHistory={() => setIsHistoryOpen(true)} 
         onOpenFridge={() => setIsFridgeOpen(true)} 
         isPro={isPro}
-        onManageSubscription={handleManageSubscription}
+        onManageSubscription={manageSubscription}
         isManagingSubscription={isManagingSubscription}
       />
       <HistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
       <VirtualFridgeModal isOpen={isFridgeOpen} onClose={() => setIsFridgeOpen(false)} />
-      <SubscriptionModal isOpen={isSubscriptionModalOpen} onClose={() => setIsSubscriptionModalOpen(false)} onUpgrade={handleUpgrade} reason="fridge_limit" />
+      <SubscriptionModal isOpen={isSubscriptionModalOpen} onClose={() => setIsSubscriptionModalOpen(false)} onUpgrade={upgrade} reason="fridge_limit" />
 
       <div className="w-full max-w-md relative flex flex-col items-center mt-20 mb-8">
 
@@ -204,7 +144,7 @@ export default function Home() {
           canScan ? (
             <CameraView videoRef={videoRef} canvasRef={canvasRef} capturePhoto={capturePhoto} t={t} />
           ) : (
-            <SubscriptionContent onUpgrade={handleUpgrade} reason="scan_limit" />
+            <SubscriptionContent onUpgrade={upgrade} reason="scan_limit" />
           )
         )}
 

@@ -1,15 +1,29 @@
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRepository } from "@/services/UserRepository";
 import { remoteConfig, db } from "@/config/firebase";
 import { getNumber } from "firebase/remote-config";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, onSnapshot } from "firebase/firestore";
 import { useScanHistory } from "@/hooks/useScanHistory";
+import { useTranslation } from "react-i18next";
 
 export function useSubscription() {
+  const { t } = useTranslation();
   const { user, loading: authLoading } = useAuth();
   const { history } = useScanHistory();
   const queryClient = useQueryClient();
+
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [isManagingSubscription, setIsManagingSubscription] = useState(false);
+
+  // Auto-clear toast after 4 seconds
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   // Get dynamic limits from remote config, gracefully falling back to defaults if not loaded yet
   let freeDailyScans = 5;
@@ -63,6 +77,112 @@ export function useSubscription() {
     enabled: !!user && !authLoading,
   });
 
+  const upgrade = async () => {
+    if (!user) {
+      setToast({ message: t('loginRequired', 'Please log in to upgrade to Pro.'), type: 'error' });
+      return;
+    }
+
+    try {
+      const checkoutRef = collection(db, 'users', user.uid, 'checkout_sessions');
+      const docRef = await addDoc(checkoutRef, {
+        price: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID || 'price_placeholder',
+        success_url: window.location.origin,
+        cancel_url: window.location.origin,
+      });
+
+      // Listen for the extension to populate the URL
+      let unsubscribe: () => void;
+      let isTimedOut = false;
+      const timeoutId = setTimeout(() => {
+        isTimedOut = true;
+        if (unsubscribe) unsubscribe();
+        setToast({ message: t('checkoutTimeoutError', 'Checkout portal session timed out. Please check your network or try again.'), type: 'error' });
+      }, 15000);
+
+      unsubscribe = onSnapshot(
+        docRef,
+        (snap) => {
+          if (isTimedOut) return;
+          const data = snap.data();
+          if (data?.url) {
+            clearTimeout(timeoutId);
+            unsubscribe();
+            window.location.assign(data.url);
+          }
+          if (data?.error) {
+            clearTimeout(timeoutId);
+            unsubscribe();
+            setToast({ message: `Checkout Error: ${data.error.message}`, type: 'error' });
+          }
+        },
+        (error) => {
+          if (isTimedOut) return;
+          clearTimeout(timeoutId);
+          unsubscribe();
+          console.error("Checkout Snapshot Error:", error);
+          setToast({ message: t('checkoutListenerError', 'Failed to load checkout portal. Please check your network or try again.'), type: 'error' });
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setToast({ message: t('checkoutInitiationError', 'Failed to initiate checkout'), type: 'error' });
+    }
+  };
+
+  const manageSubscription = async () => {
+    if (!user) return;
+    setIsManagingSubscription(true);
+
+    try {
+      const portalRef = collection(db, 'users', user.uid, 'portal_sessions');
+      const docRef = await addDoc(portalRef, {
+        returnUrl: window.location.origin,
+      });
+
+      // Listen for the extension to populate the URL
+      let unsubscribe: () => void;
+      let isTimedOut = false;
+      const timeoutId = setTimeout(() => {
+        isTimedOut = true;
+        if (unsubscribe) unsubscribe();
+        setIsManagingSubscription(false);
+        setToast({ message: t('portalTimeoutError', 'Billing portal session timed out. Please verify your Stripe configuration.'), type: 'error' });
+      }, 15000);
+
+      unsubscribe = onSnapshot(
+        docRef,
+        (snap) => {
+          if (isTimedOut) return;
+          const data = snap.data();
+          if (data?.url) {
+            clearTimeout(timeoutId);
+            unsubscribe();
+            window.location.assign(data.url);
+          }
+          if (data?.error) {
+            clearTimeout(timeoutId);
+            unsubscribe();
+            setIsManagingSubscription(false);
+            setToast({ message: `Portal Error: ${data.error.message}`, type: 'error' });
+          }
+        },
+        (error) => {
+          if (isTimedOut) return;
+          clearTimeout(timeoutId);
+          unsubscribe();
+          setIsManagingSubscription(false);
+          console.error("Portal Snapshot Error:", error);
+          setToast({ message: t('portalListenerError', 'Failed to load billing portal. Please check your network or try again.'), type: 'error' });
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setIsManagingSubscription(false);
+      setToast({ message: t('portalInitiationError', 'Failed to initiate billing portal session'), type: 'error' });
+    }
+  };
+
   const isPro = subscriptionQuery.data || false;
   const currentCount = quotaQuery.data?.scan_count || 0;
   const scansRemaining = Math.max(0, freeDailyScans - currentCount);
@@ -81,6 +201,11 @@ export function useSubscription() {
     fridgeItemsCount,
     freeFridgeLimit,
     trackScan: trackScanMutation.mutate,
-    loading: quotaQuery.isLoading || authLoading
+    loading: quotaQuery.isLoading || authLoading,
+    toast,
+    setToast,
+    isManagingSubscription,
+    upgrade,
+    manageSubscription
   };
 }
