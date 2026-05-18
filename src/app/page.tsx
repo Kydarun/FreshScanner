@@ -194,9 +194,9 @@ export default function Home() {
       {/* Legal Footer for Google OAuth Compliance */}
       <div className="w-full text-center py-6 mt-auto">
         <p className="text-xs text-slate-500">
-          <a href="https://gravel-apology-d40.notion.site/Privacy-Policy-for-FreshScan-3643ee72839c8028a308c3537d86beae?source=copy_link" target="_blank" rel="noopener noreferrer" className="hover:text-slate-400 transition-colors">Privacy Policy</a>
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-slate-400 transition-colors">Privacy Policy</a>
           {" • "}
-          <a href="https://gravel-apology-d40.notion.site/Terms-of-Service-for-FreshScan-3643ee72839c80cc9f72f03fac833991?source=copy_link" target="_blank" rel="noopener noreferrer" className="hover:text-slate-400 transition-colors">Terms of Service</a>
+          <a href="/terms" target="_blank" rel="noopener noreferrer" className="hover:text-slate-400 transition-colors">Terms of Service</a>
         </p>
       </div>
     </main>
