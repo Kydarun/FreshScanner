@@ -57,5 +57,13 @@
   "pricePerMonth": "{{price}} / mo",
   "privacyPolicy": "Privacy Policy",
   "termsOfService": "Terms of Service",
-  "fridgeInfo": "Save this item to your Virtual Fridge to keep track of its shelf-life and get smart reminders before it spoils."
+  "fridgeInfo": "Save this item to your Virtual Fridge to keep track of its shelf-life and get smart reminders before it spoils.",
+  "scanLimitReached": "You've reached your free daily scan limit! Upgrade to Pro for unlimited scans.",
+  "fridgeLimitReached": "You've reached the free virtual fridge limit! Upgrade to Pro for unlimited storage.",
+  "manageSubscription": "Manage Subscription",
+  "loadingPortal": "Opening billing portal...",
+  "portalListenerError": "Failed to load billing portal. Please check your network or try again.",
+  "checkoutListenerError": "Failed to load checkout portal. Please check your network or try again.",
+  "portalInitiationError": "Failed to initiate billing portal session.",
+  "checkoutInitiationError": "Failed to initiate checkout."
 }

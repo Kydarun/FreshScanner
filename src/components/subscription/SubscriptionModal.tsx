@@ -5,9 +5,10 @@ interface SubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpgrade?: () => void;
+  reason?: 'scan_limit' | 'fridge_limit' | null;
 }
 
-export default function SubscriptionModal({ isOpen, onClose, onUpgrade }: SubscriptionModalProps) {
+export default function SubscriptionModal({ isOpen, onClose, onUpgrade, reason = null }: SubscriptionModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -19,7 +20,7 @@ export default function SubscriptionModal({ isOpen, onClose, onUpgrade }: Subscr
         >
           <X className="w-6 h-6" />
         </button>
-        <SubscriptionContent onUpgrade={onUpgrade} />
+        <SubscriptionContent onUpgrade={onUpgrade} reason={reason} />
       </div>
     </div>
   );

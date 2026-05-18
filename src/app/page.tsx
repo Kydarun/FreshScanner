@@ -35,6 +35,7 @@ export default function Home() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isFridgeOpen, setIsFridgeOpen] = useState(false);
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
+  const [isManagingSubscription, setIsManagingSubscription] = useState(false);
 
   // Bind the media stream to the video element
   useEffect(() => {
@@ -109,20 +110,67 @@ export default function Home() {
       });
 
       // Listen for the extension to populate the URL
-      const unsubscribe = onSnapshot(docRef, (snap) => {
-        const data = snap.data();
-        if (data?.url) {
+      const unsubscribe = onSnapshot(
+        docRef,
+        (snap) => {
+          const data = snap.data();
+          if (data?.url) {
+            unsubscribe();
+            window.location.assign(data.url);
+          }
+          if (data?.error) {
+            unsubscribe();
+            alert(`Checkout Error: ${data.error.message}`);
+          }
+        },
+        (error) => {
           unsubscribe();
-          window.location.assign(data.url);
+          console.error("Checkout Snapshot Error:", error);
+          alert(t('checkoutListenerError', 'Failed to load checkout portal. Please check your network or try again.'));
         }
-        if (data?.error) {
-          unsubscribe();
-          alert(`Checkout Error: ${data.error.message}`);
-        }
-      });
+      );
     } catch (err) {
       console.error(err);
-      alert('Failed to initiate checkout');
+      alert(t('checkoutInitiationError', 'Failed to initiate checkout'));
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    if (!user) return;
+    setIsManagingSubscription(true);
+
+    try {
+      const portalRef = collection(db, 'users', user.uid, 'portal_sessions');
+      const docRef = await addDoc(portalRef, {
+        returnUrl: window.location.origin,
+      });
+
+      // Listen for the extension to populate the URL
+      const unsubscribe = onSnapshot(
+        docRef,
+        (snap) => {
+          const data = snap.data();
+          if (data?.url) {
+            unsubscribe();
+            window.location.assign(data.url);
+          }
+          if (data?.error) {
+            unsubscribe();
+            setIsManagingSubscription(false);
+            alert(`Portal Error: ${data.error.message}`);
+          }
+        },
+        (error) => {
+          unsubscribe();
+          setIsManagingSubscription(false);
+          console.error("Portal Snapshot Error:", error);
+          alert(t('portalListenerError', 'Failed to load billing portal. Please check your network or try again.'));
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      setIsManagingSubscription(false);
+      alert(t('portalInitiationError', 'Failed to initiate billing portal session'));
     }
   };
 
@@ -130,10 +178,16 @@ export default function Home() {
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center p-4 relative">
-      <Header onOpenHistory={() => setIsHistoryOpen(true)} onOpenFridge={() => setIsFridgeOpen(true)} />
+      <Header 
+        onOpenHistory={() => setIsHistoryOpen(true)} 
+        onOpenFridge={() => setIsFridgeOpen(true)} 
+        isPro={isPro}
+        onManageSubscription={handleManageSubscription}
+        isManagingSubscription={isManagingSubscription}
+      />
       <HistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
       <VirtualFridgeModal isOpen={isFridgeOpen} onClose={() => setIsFridgeOpen(false)} />
-      <SubscriptionModal isOpen={isSubscriptionModalOpen} onClose={() => setIsSubscriptionModalOpen(false)} onUpgrade={handleUpgrade} />
+      <SubscriptionModal isOpen={isSubscriptionModalOpen} onClose={() => setIsSubscriptionModalOpen(false)} onUpgrade={handleUpgrade} reason="fridge_limit" />
 
       <div className="w-full max-w-md relative flex flex-col items-center mt-20 mb-8">
 
@@ -150,7 +204,7 @@ export default function Home() {
           canScan ? (
             <CameraView videoRef={videoRef} canvasRef={canvasRef} capturePhoto={capturePhoto} t={t} />
           ) : (
-            <SubscriptionContent onUpgrade={handleUpgrade} />
+            <SubscriptionContent onUpgrade={handleUpgrade} reason="scan_limit" />
           )
         )}
 

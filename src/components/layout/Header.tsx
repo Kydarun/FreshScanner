@@ -1,4 +1,4 @@
-import { ScanLine, LogIn, LogOut, Loader2, Clock, Refrigerator } from "lucide-react";
+import { ScanLine, LogIn, LogOut, Loader2, Clock, Refrigerator, CreditCard } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useRef, useEffect } from "react";
@@ -6,9 +6,12 @@ import { useState, useRef, useEffect } from "react";
 interface HeaderProps {
   onOpenHistory?: () => void;
   onOpenFridge?: () => void;
+  isPro?: boolean;
+  onManageSubscription?: () => void;
+  isManagingSubscription?: boolean;
 }
 
-export default function Header({ onOpenHistory, onOpenFridge }: HeaderProps) {
+export default function Header({ onOpenHistory, onOpenFridge, isPro = false, onManageSubscription, isManagingSubscription = false }: HeaderProps) {
   const { t, i18n } = useTranslation();
   const { user, loading, loginWithGoogle, logout } = useAuth();
   
@@ -75,11 +78,30 @@ export default function Header({ onOpenHistory, onOpenFridge }: HeaderProps) {
             </button>
             
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl py-1 z-50 animate-in fade-in slide-in-from-top-2">
+              <div className="absolute right-0 mt-2 w-52 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl py-1 z-50 animate-in fade-in slide-in-from-top-2">
                 <div className="px-4 py-3 border-b border-slate-700/50">
                   <p className="text-sm text-white font-medium truncate">{user.displayName || 'User'}</p>
                   <p className="text-xs text-slate-400 truncate">{user.email}</p>
                 </div>
+                
+                {isPro && onManageSubscription && (
+                  <button 
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      onManageSubscription();
+                    }}
+                    disabled={isManagingSubscription}
+                    className="w-full text-left px-4 py-2.5 text-sm text-emerald-400 hover:bg-white/5 flex items-center gap-2 transition-colors border-b border-slate-700/50 disabled:opacity-50"
+                  >
+                    {isManagingSubscription ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />
+                    ) : (
+                      <CreditCard className="w-4 h-4 text-emerald-400" />
+                    )}
+                    {isManagingSubscription ? t('loadingPortal') : t('manageSubscription')}
+                  </button>
+                )}
+
                 <button 
                   onClick={() => {
                     setIsDropdownOpen(false);

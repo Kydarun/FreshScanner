@@ -57,5 +57,13 @@
   "pricePerMonth": "{{price}} / 月",
   "privacyPolicy": "隐私政策",
   "termsOfService": "服务条款",
-  "fridgeInfo": "将此物品保存到虚拟冰箱中，以便追踪保质期并在过期前获得智能提醒。"
+  "fridgeInfo": "将此物品保存到虚拟冰箱中，以便追踪保质期并在过期前获得智能提醒。",
+  "scanLimitReached": "您已达到今日免费扫描上限！升级到 Pro 以享受无限次扫描。",
+  "fridgeLimitReached": "您已达到免费虚拟冰箱存储上限！升级到 Pro 以享受无限存储空间。",
+  "manageSubscription": "管理订阅",
+  "loadingPortal": "正在打开计费中心...",
+  "portalListenerError": "无法加载计费中心。请检查网络或重试。",
+  "checkoutListenerError": "无法加载结账页面。请检查网络或重试。",
+  "portalInitiationError": "无法启动计费中心会话。",
+  "checkoutInitiationError": "无法启动结账服务。"
 }

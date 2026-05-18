@@ -1,12 +1,13 @@
-import { Sparkles, CheckCircle2 } from "lucide-react";
+import { Sparkles, CheckCircle2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface SubscriptionContentProps {
   onUpgrade?: () => void;
   price?: string; // Fetched from Stripe
+  reason?: 'scan_limit' | 'fridge_limit' | null;
 }
 
-export default function SubscriptionContent({ onUpgrade, price = "$2.99" }: SubscriptionContentProps) {
+export default function SubscriptionContent({ onUpgrade, price = "$2.99", reason = null }: SubscriptionContentProps) {
   const { t } = useTranslation();
 
   const features = [
@@ -18,6 +19,19 @@ export default function SubscriptionContent({ onUpgrade, price = "$2.99" }: Subs
 
   return (
     <div className="glass-card flex flex-col items-center gap-6 text-center p-8 w-full border-emerald-500/30 relative overflow-hidden">
+      {/* Limit Warning Banners */}
+      {reason === 'scan_limit' && (
+        <div className="w-full bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex items-center gap-2.5 text-amber-400 text-xs text-left leading-relaxed z-10 animate-in fade-in slide-in-from-top-2">
+          <AlertCircle className="w-5 h-5 shrink-0" />
+          <span>{t('scanLimitReached')}</span>
+        </div>
+      )}
+      {reason === 'fridge_limit' && (
+        <div className="w-full bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex items-center gap-2.5 text-amber-400 text-xs text-left leading-relaxed z-10 animate-in fade-in slide-in-from-top-2">
+          <AlertCircle className="w-5 h-5 shrink-0" />
+          <span>{t('fridgeLimitReached')}</span>
+        </div>
+      )}
       {/* Background glow */}
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/20 blur-[60px] rounded-full pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-sky-500/20 blur-[60px] rounded-full pointer-events-none" />
