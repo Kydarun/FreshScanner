@@ -32,7 +32,7 @@ export default function VirtualFridgeModal({ isOpen, onClose }: VirtualFridgeMod
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="w-full sm:w-full sm:max-w-md h-[85vh] sm:h-[80vh] bg-slate-900 sm:rounded-3xl rounded-t-3xl shadow-2xl flex flex-col border border-slate-800 animate-in slide-in-from-bottom-8 duration-300">
-        
+
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10 shrink-0 bg-slate-900/50">
           <div className="flex items-center gap-3">
@@ -54,7 +54,7 @@ export default function VirtualFridgeModal({ isOpen, onClose }: VirtualFridgeMod
               )}
             </div>
           </div>
-          <button 
+          <button
             onClick={handleClose}
             className="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
           >
@@ -65,7 +65,11 @@ export default function VirtualFridgeModal({ isOpen, onClose }: VirtualFridgeMod
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
           {selectedRecord ? (
-            <HistoryDetail record={selectedRecord} />
+            <HistoryDetail
+              record={fridgeItems.find((r) => r.id === selectedRecord.id) || selectedRecord}
+              onToggleStorage={handleToggleStorage}
+              showStorageDetails={true}
+            />
           ) : fridgeItems.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-slate-400 gap-4 opacity-70">
               <Search className="w-12 h-12" />
@@ -73,10 +77,10 @@ export default function VirtualFridgeModal({ isOpen, onClose }: VirtualFridgeMod
             </div>
           ) : (
             fridgeItems.map((item) => (
-              <VirtualFridgeCard 
-                key={item.id} 
-                item={item} 
-                onToggleStorage={handleToggleStorage} 
+              <VirtualFridgeCard
+                key={item.id}
+                item={item}
+                onToggleStorage={handleToggleStorage}
                 onClick={() => setSelectedRecord(item)}
               />
             ))

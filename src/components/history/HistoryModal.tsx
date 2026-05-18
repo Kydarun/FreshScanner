@@ -47,7 +47,9 @@ export default function HistoryModal({ isOpen, onClose }: HistoryModalProps) {
 
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
           {selectedRecord ? (
-            <HistoryDetail record={selectedRecord} />
+            <HistoryDetail
+              record={history.find((r) => r.id === selectedRecord.id) || selectedRecord}
+            />
           ) : (
             <HistoryList history={history} loading={loading} onSelectRecord={setSelectedRecord} />
           )}
