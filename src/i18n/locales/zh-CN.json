@@ -23,5 +23,34 @@
     "SPOILED": "已变质",
     "NOT_FOOD": "非食物",
     "UNCLEAR": "图像不清晰"
-  }
+  },
+  "dailyLimitReached": "已达到每日上限",
+  "upgradePrompt": "您今天的免费扫描次数已用完。升级至 FreshScan+ 即可解锁无限次扫描和无限制的虚拟冰箱容量！",
+  "upgradeToPro": "升级至 Pro 版",
+  "virtualFridgeTitle": "虚拟冰箱",
+  "itemsSaved": "已保存 {{count}} 个物品",
+  "emptyFridge": "您的虚拟冰箱是空的。",
+  "scannedOn": "扫描于 {{date}}",
+  "fridgeStatus": {
+    "expired": "已过期",
+    "expiringSoon": "即将过期",
+    "fresh": "新鲜"
+  },
+  "unsafeStorage": "不适合在此环境保存",
+  "expiresOn": "过期时间: ",
+  "storage": {
+    "pantry": "常温",
+    "fridge": "冷藏",
+    "freezer": "冷冻"
+  },
+  "addToFridge": "加入虚拟冰箱",
+  "addedToFridgeSuccess": "已加入虚拟冰箱！",
+  "fridgeLimitReachedAlert": "虚拟冰箱容量已满！请升级至 Pro 版。",
+  "paywallSubtitle": "解锁终极智能厨房体验。",
+  "featureScans": "无限制 AI 鲜度扫描",
+  "featureFridge": "无限制虚拟冰箱容量",
+  "featureAlerts": "智能过期提醒",
+  "featurePriority": "优先 AI 处理",
+  "restorePurchases": "恢复购买",
+  "pricePerMonth": "{{price}} / 月"
 }

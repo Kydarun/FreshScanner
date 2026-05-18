@@ -1,14 +1,29 @@
-import { ScanLine, LogIn, LogOut, Loader2, Clock } from "lucide-react";
+import { ScanLine, LogIn, LogOut, Loader2, Clock, Refrigerator } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
+import { useState, useRef, useEffect } from "react";
 
 interface HeaderProps {
   onOpenHistory?: () => void;
+  onOpenFridge?: () => void;
 }
 
-export default function Header({ onOpenHistory }: HeaderProps) {
+export default function Header({ onOpenHistory, onOpenFridge }: HeaderProps) {
   const { t, i18n } = useTranslation();
   const { user, loading, loginWithGoogle, logout } = useAuth();
+  
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className="absolute top-0 left-0 right-0 p-6 z-10 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
@@ -34,12 +49,50 @@ export default function Header({ onOpenHistory }: HeaderProps) {
           </button>
         )}
 
+        {onOpenFridge && (
+          <button onClick={onOpenFridge} className="text-sky-400 hover:text-sky-300 transition-colors" title="Virtual Fridge">
+            <Refrigerator className="w-5 h-5" />
+          </button>
+        )}
+
         {loading ? (
           <Loader2 className="w-5 h-5 text-white animate-spin" />
         ) : user ? (
-          <button onClick={logout} className="text-white hover:text-red-400 transition-colors" title={t('logout')}>
-            <LogOut className="w-5 h-5" />
-          </button>
+          <div className="relative" ref={dropdownRef}>
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)} 
+              className="relative overflow-hidden w-8 h-8 rounded-full border-2 border-white/20 hover:border-emerald-400 transition-colors flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500/50" 
+              title={t('profile', 'Profile')}
+            >
+              {user.photoURL ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-emerald-600 flex items-center justify-center text-white text-xs font-bold">
+                  {user.email?.charAt(0).toUpperCase() || 'U'}
+                </div>
+              )}
+            </button>
+            
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl py-1 z-50 animate-in fade-in slide-in-from-top-2">
+                <div className="px-4 py-3 border-b border-slate-700/50">
+                  <p className="text-sm text-white font-medium truncate">{user.displayName || 'User'}</p>
+                  <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                </div>
+                <button 
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    logout();
+                  }} 
+                  className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-white/5 flex items-center gap-2 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  {t('logout', 'Logout')}
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <button onClick={loginWithGoogle} className="text-white hover:text-emerald-400 transition-colors" title={t('login')}>
             <LogIn className="w-5 h-5" />

@@ -18,5 +18,11 @@ However, `freshness_status` MUST ALWAYS be the exact English strings: FRESH, EXP
   "freshness_status": "String (Must be FRESH, EXPIRING_SOON, SPOILED, NOT_FOOD, or UNCLEAR)",
   "confidence_score": Number (0-100),
   "analysis": "String (Detailed explanation of WHY you gave this status based on visual evidence. If NOT_FOOD, explain that this app is for raw food only. If UNCLEAR, explain that the photo is too blurry, dark, or obscured.)",
-  "visual_cues_detected": ["Array of Strings"]
+  "visual_cues_detected": ["Array of Strings"],
+  "recommended_storage": "String (Must be PANTRY, FRIDGE, or FREEZER. Use N/A if NOT_FOOD)",
+  "estimated_shelf_life_days": {
+    "PANTRY": Number (-1 if not applicable or unsafe at room temp),
+    "FRIDGE": Number (-1 if not applicable),
+    "FREEZER": Number (-1 if not applicable)
+  }
 }

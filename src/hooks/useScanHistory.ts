@@ -54,9 +54,30 @@ export function useScanHistory() {
     }
   });
 
+  const updateScanMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string, updates: Partial<ScanRecord> }) => {
+      if (user) {
+        try {
+          await ScanRepository.updateCloudScan(id, updates);
+        } catch (error) {
+          console.error("Failed to update cloud scan.", error);
+          const currentHistory = historyQuery.data || [];
+          ScanRepository.updateLocalScan(id, updates, currentHistory);
+        }
+      } else {
+        const currentHistory = historyQuery.data || [];
+        ScanRepository.updateLocalScan(id, updates, currentHistory);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scanHistory', user?.uid] });
+    }
+  });
+
   return { 
     history: historyQuery.data || [], 
     loading: historyQuery.isLoading || authLoading, 
-    addScan: addScanMutation.mutate 
+    addScan: addScanMutation.mutateAsync,
+    updateScan: updateScanMutation.mutate
   };
 }

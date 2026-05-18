@@ -32,6 +32,12 @@ You must ONLY output a valid JSON object.
   "freshness_status": "String (Must be FRESH, EXPIRING_SOON, SPOILED, NOT_FOOD, or UNCLEAR)",
   "confidence_score": "Number (0-100)",
   "analysis": "String (Detailed explanation of WHY you gave this status based on visual evidence. Handle edge cases here.)",
-  "visual_cues_detected": ["Array of Strings"]
+  "visual_cues_detected": ["Array of Strings"],
+  "recommended_storage": "String (Must be PANTRY, FRIDGE, or FREEZER. Use N/A if NOT_FOOD)",
+  "estimated_shelf_life_days": {
+    "PANTRY": "Number (Estimated days before spoiling at room temp. -1 if not applicable/unsafe)",
+    "FRIDGE": "Number (Estimated days before spoiling in fridge. -1 if not applicable)",
+    "FREEZER": "Number (Estimated days before spoiling in freezer. -1 if not applicable)"
+  }
 }
 ```

@@ -1,25 +1,40 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { RefreshCw, AlertCircle, Sparkles } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
+import { db } from "@/config/firebase";
 import { useCamera } from "@/hooks/useCamera";
 import { useScanHistory } from "@/hooks/useScanHistory";
+import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/layout/Header";
 import HistoryModal from "@/components/history/HistoryModal";
+import VirtualFridgeModal from "@/components/fridge/VirtualFridgeModal";
+import SubscriptionContent from "@/components/subscription/SubscriptionContent";
+import SubscriptionModal from "@/components/subscription/SubscriptionModal";
+import CameraView from "@/components/scanner/CameraView";
+import AnalysisResultCard from "@/components/scanner/AnalysisResultCard";
+import ActionButtons from "@/components/scanner/ActionButtons";
 import { useMutation } from "@tanstack/react-query";
 import { AnalysisResult } from "@/types";
-import { STATUS_CONFIG } from "@/config/status";
+import { useSubscription } from "@/hooks/useSubscription";
 
 export default function Home() {
   const { t, i18n } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { user } = useAuth();
 
   const { stream, cameraError, capturedImage, capturePhoto, retakePhoto } = useCamera();
   const { addScan } = useScanHistory();
+  const { isPro, canScan, scansRemaining, trackScan, canAddToFridge, loading: subscriptionLoading } = useSubscription();
+  const { updateScan } = useScanHistory();
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [currentScanId, setCurrentScanId] = useState<string | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isFridgeOpen, setIsFridgeOpen] = useState(false);
+  const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
 
   // Bind the media stream to the video element
   useEffect(() => {
@@ -40,13 +55,15 @@ export default function Home() {
       }
       return res.json() as Promise<AnalysisResult>;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setAnalysisResult(data);
-      addScan({
+      const newRecord = await addScan({
         ...data,
         timestamp: Date.now(),
         image_url: capturedImage || undefined,
       });
+      setCurrentScanId(newRecord?.id || null);
+      trackScan(data.freshness_status === 'NOT_FOOD');
     },
     onError: (err) => {
       console.error(err);
@@ -62,16 +79,61 @@ export default function Home() {
 
   const handleRetake = () => {
     setAnalysisResult(null);
+    setCurrentScanId(null);
     analyzeMutation.reset();
     retakePhoto();
+  };
+
+  const handleAddToFridge = () => {
+    if (!currentScanId) return;
+    if (!canAddToFridge) {
+      setIsSubscriptionModalOpen(true);
+      return;
+    }
+    updateScan({ id: currentScanId, updates: { in_virtual_fridge: true, current_storage: analysisResult?.recommended_storage || 'FRIDGE' } });
+    setIsFridgeOpen(true); // Automatically open fridge to show it was added!
+  };
+
+  const handleUpgrade = async () => {
+    if (!user) {
+      alert(t('loginRequired', 'Please log in to upgrade to Pro.'));
+      return;
+    }
+
+    try {
+      const checkoutRef = collection(db, 'users', user.uid, 'checkout_sessions');
+      const docRef = await addDoc(checkoutRef, {
+        price: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID || 'price_placeholder',
+        success_url: window.location.origin,
+        cancel_url: window.location.origin,
+      });
+
+      // Listen for the extension to populate the URL
+      const unsubscribe = onSnapshot(docRef, (snap) => {
+        const data = snap.data();
+        if (data?.url) {
+          unsubscribe();
+          window.location.assign(data.url);
+        }
+        if (data?.error) {
+          unsubscribe();
+          alert(`Checkout Error: ${data.error.message}`);
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      alert('Failed to initiate checkout');
+    }
   };
 
   const isScanning = analyzeMutation.isPending;
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center p-4 relative">
-      <Header onOpenHistory={() => setIsHistoryOpen(true)} />
+      <Header onOpenHistory={() => setIsHistoryOpen(true)} onOpenFridge={() => setIsFridgeOpen(true)} />
       <HistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
+      <VirtualFridgeModal isOpen={isFridgeOpen} onClose={() => setIsFridgeOpen(false)} />
+      <SubscriptionModal isOpen={isSubscriptionModalOpen} onClose={() => setIsSubscriptionModalOpen(false)} onUpgrade={handleUpgrade} />
 
       <div className="w-full max-w-md relative flex flex-col items-center mt-16">
 
@@ -83,29 +145,13 @@ export default function Home() {
           </div>
         )}
 
-        {/* Live Camera View */}
+        {/* Live Camera View or Paywall */}
         {!capturedImage && !cameraError && (
-          <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden bg-slate-900 shadow-2xl border border-slate-800">
-            <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-
-            {/* Viewfinder Overlay */}
-            <div className="absolute inset-0 border-[2px] border-white/20 m-8 rounded-2xl pointer-events-none">
-              <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-emerald-500 rounded-tl-xl -m-[2px]" />
-              <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-emerald-500 rounded-tr-xl -m-[2px]" />
-              <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-emerald-500 rounded-bl-xl -m-[2px]" />
-              <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-emerald-500 rounded-br-xl -m-[2px]" />
-            </div>
-
-            <div className="absolute bottom-8 left-0 right-0 flex justify-center pb-safe">
-              <button
-                onClick={() => capturePhoto(videoRef, canvasRef)}
-                className="w-20 h-20 rounded-full border-4 border-white/80 flex items-center justify-center p-1 active:scale-95 transition-transform"
-                aria-label={t('takePhoto')}
-              >
-                <div className="w-full h-full bg-white rounded-full" />
-              </button>
-            </div>
-          </div>
+          canScan ? (
+            <CameraView videoRef={videoRef} canvasRef={canvasRef} capturePhoto={capturePhoto} t={t} />
+          ) : (
+            <SubscriptionContent onUpgrade={handleUpgrade} />
+          )
         )}
 
         {/* Captured Result View */}
@@ -124,83 +170,34 @@ export default function Home() {
 
             {/* AI Analysis Result Card */}
             {analysisResult && (
-              <div className="glass-card flex flex-col gap-4 mt-[-4rem] relative z-10 mx-4 shadow-xl border-t border-white/10">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h2 className="text-xl font-bold text-white">{analysisResult.identified_item}</h2>
-                    {analysisResult.specific_cut_or_part && analysisResult.specific_cut_or_part !== 'N/A' && (
-                      <p className="text-emerald-400 text-sm font-medium mt-1">{analysisResult.specific_cut_or_part}</p>
-                    )}
-                  </div>
-
-                  {(() => {
-                    const statusConfig = STATUS_CONFIG[analysisResult.freshness_status] || STATUS_CONFIG['SPOILED'];
-                    const StatusIcon = statusConfig.Icon;
-                    return (
-                      <div className={`px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 ${statusConfig.colorClass}`}>
-                        <StatusIcon className="w-3.5 h-3.5" />
-                        {t(`status.${analysisResult.freshness_status}`)}
-                      </div>
-                    );
-                  })()}
-                </div>
-
-                <p className="text-slate-300 text-sm leading-relaxed">{analysisResult.analysis}</p>
-
-                {analysisResult.visual_cues_detected && analysisResult.visual_cues_detected.length > 0 && (
-                  <div className="mt-2 pt-3 border-t border-white/10 flex flex-wrap gap-2">
-                    {analysisResult.visual_cues_detected.map((cue, i) => (
-                      <span key={i} className="bg-white/10 px-2.5 py-1 rounded-md text-xs text-slate-300 border border-white/5">{cue}</span>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <AnalysisResultCard 
+                analysisResult={analysisResult} 
+                onAddToFridge={handleAddToFridge} 
+                t={t} 
+              />
             )}
 
             {/* Action Buttons */}
-            <div className="flex gap-4 px-4">
-              {!analysisResult ? (
-                <>
-                  <button
-                    onClick={handleRetake}
-                    disabled={isScanning}
-                    className="flex-1 glass py-4 rounded-2xl font-medium text-slate-300 flex items-center justify-center gap-2 hover:bg-white/10 transition-colors disabled:opacity-50"
-                  >
-                    <RefreshCw className="w-5 h-5" />
-                    {t('retake')}
-                  </button>
-                  <button
-                    onClick={analyzeFood}
-                    disabled={isScanning}
-                    className="flex-[2] bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-bold text-white flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
-                  >
-                    {isScanning ? (
-                      <>
-                        <RefreshCw className="w-5 h-5 animate-spin" />
-                        {t('analyzing')}
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-5 h-5" />
-                        {t('checkFreshness')}
-                      </>
-                    )}
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={handleRetake}
-                  className="w-full glass py-4 rounded-2xl font-medium text-slate-300 flex items-center justify-center gap-2 hover:bg-white/10 transition-colors"
-                >
-                  <RefreshCw className="w-5 h-5" />
-                  {t('retake')}
-                </button>
-              )}
-            </div>
+            <ActionButtons 
+              hasResult={!!analysisResult} 
+              isScanning={isScanning} 
+              onRetake={handleRetake} 
+              onAnalyze={analyzeFood} 
+              t={t} 
+            />
           </div>
         )}
 
         <canvas ref={canvasRef} className="hidden" />
+      </div>
+
+      {/* Legal Footer for Google OAuth Compliance */}
+      <div className="w-full text-center py-6 mt-auto">
+        <p className="text-xs text-slate-500">
+          <a href="https://gravel-apology-d40.notion.site/Privacy-Policy-for-FreshScan-3643ee72839c8028a308c3537d86beae?source=copy_link" target="_blank" rel="noopener noreferrer" className="hover:text-slate-400 transition-colors">Privacy Policy</a>
+          {" • "}
+          <a href="https://gravel-apology-d40.notion.site/Terms-of-Service-for-FreshScan-3643ee72839c80cc9f72f03fac833991?source=copy_link" target="_blank" rel="noopener noreferrer" className="hover:text-slate-400 transition-colors">Terms of Service</a>
+        </p>
       </div>
     </main>
   );

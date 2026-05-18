@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   title: "FreshScan | AI Food Quality Analyzer",
   description: "Take a photo of raw food in groceries and use AI to determine its freshness instantly.",
   manifest: "/manifest.json",
+  verification: {
+    google: "KpEOK6BKth0Cea20SybgCIliL2qootvLaO3VbFeLbNk",
+  },
 };
 
 export const viewport: Viewport = {

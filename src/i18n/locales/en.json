@@ -23,5 +23,34 @@
     "SPOILED": "Spoiled",
     "NOT_FOOD": "Not Food",
     "UNCLEAR": "Unclear Image"
-  }
+  },
+  "dailyLimitReached": "Daily Limit Reached",
+  "upgradePrompt": "You've used all your free scans for today. Upgrade to FreshScan+ for unlimited daily scans and unlimited Virtual Fridge capacity!",
+  "upgradeToPro": "Upgrade to Pro",
+  "virtualFridgeTitle": "Virtual Fridge",
+  "itemsSaved": "{{count}} items saved",
+  "emptyFridge": "Your Virtual Fridge is empty.",
+  "scannedOn": "Scanned {{date}}",
+  "fridgeStatus": {
+    "expired": "Expired",
+    "expiringSoon": "Expiring Soon",
+    "fresh": "Fresh"
+  },
+  "unsafeStorage": "Unsafe in this storage",
+  "expiresOn": "Expires: ",
+  "storage": {
+    "pantry": "Pantry",
+    "fridge": "Fridge",
+    "freezer": "Freezer"
+  },
+  "addToFridge": "Add to Virtual Fridge",
+  "addedToFridgeSuccess": "Added to Virtual Fridge!",
+  "fridgeLimitReachedAlert": "Virtual Fridge Limit Reached! Upgrade to Pro.",
+  "paywallSubtitle": "Unlock the ultimate smart kitchen experience.",
+  "featureScans": "Unlimited AI Freshness Scans",
+  "featureFridge": "Unlimited Virtual Fridge Storage",
+  "featureAlerts": "Smart Expiration Alerts",
+  "featurePriority": "Priority AI Processing",
+  "restorePurchases": "Restore Purchases",
+  "pricePerMonth": "{{price}} / mo"
 }

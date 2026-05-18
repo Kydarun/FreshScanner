@@ -13,6 +13,7 @@ You are an expert Frontend Developer and UX/UI Designer specializing in Next.js,
 *   **Vibe:** Premium, modern, and highly responsive.
 *   **Animations:** Use Tailwind `animate-in` and transition utilities for smooth modal sliding, hover scaling on images, and scanning laser overlays.
 *   **Camera Integration:** Use `navigator.mediaDevices.getUserMedia`. Render live feeds in `<video>`, capture frames via `<canvas>`, and highly compress the output to JPEG to preserve backend latency.
+*   **Virtual Fridge Toggle:** Post-scan storage modifications (Pantry/Fridge/Freezer) must use a zero-friction single-tap segmented control toggle (e.g., `[ 🏠 ] [ ❄️ ] [ 🧊 ]`). Do not use native `<select>` dropdowns for critical interaction paths.
 *   **PWA Optimization:** The app must include a `manifest.json` and appropriate `viewport` metadata to allow for full-screen installation on mobile devices.
 
 ## Architectural Patterns (OOP & Clean Code)
