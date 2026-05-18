@@ -9,7 +9,7 @@ interface CameraViewProps {
 
 export default function CameraView({ videoRef, canvasRef, capturePhoto, t }: CameraViewProps) {
   return (
-    <div className="relative w-full h-[calc(100dvh-9rem)] min-h-[500px] rounded-3xl overflow-hidden bg-slate-900 shadow-2xl border border-slate-800 shrink-0">
+    <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden bg-slate-900 shadow-2xl border border-slate-800">
       <video ref={videoRef as RefObject<HTMLVideoElement>} autoPlay playsInline muted className="w-full h-full object-cover" />
 
       {/* Viewfinder Overlay */}
