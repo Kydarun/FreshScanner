@@ -1,5 +1,7 @@
 {
   "appTitle": "FreshScan",
+  "appSubtitle": "AI Food Quality Analyzer",
+  "appDescription": "Point your camera at raw food or groceries to instantly evaluate freshness and shelf-life using AI.",
   "cameraError": "Unable to access camera. Please check permissions.",
   "takePhoto": "Take photo",
   "retake": "Retake",
@@ -52,5 +54,7 @@
   "featureAlerts": "Smart Expiration Alerts",
   "featurePriority": "Priority AI Processing",
   "restorePurchases": "Restore Purchases",
-  "pricePerMonth": "{{price}} / mo"
+  "pricePerMonth": "{{price}} / mo",
+  "privacyPolicy": "Privacy Policy",
+  "termsOfService": "Terms of Service"
 }

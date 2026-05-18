@@ -1,5 +1,7 @@
 {
   "appTitle": "鲜度扫描 (FreshScan)",
+  "appSubtitle": "AI 食品质量分析仪",
+  "appDescription": "将相机对准生鲜食品或杂货，使用 AI 立即评估新鲜度和保质期。",
   "cameraError": "无法访问相机，请检查权限。",
   "takePhoto": "拍照",
   "retake": "重拍",
@@ -50,7 +52,9 @@
   "featureScans": "无限制 AI 鲜度扫描",
   "featureFridge": "无限制虚拟冰箱容量",
   "featureAlerts": "智能过期提醒",
-  "featurePriority": "优先 AI 处理",
+  "featurePriority": "优先的 AI 处理速度",
   "restorePurchases": "恢复购买",
-  "pricePerMonth": "{{price}} / 月"
+  "pricePerMonth": "{{price}} / 月",
+  "privacyPolicy": "隐私政策",
+  "termsOfService": "服务条款"
 }

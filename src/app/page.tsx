@@ -193,10 +193,18 @@ export default function Home() {
 
       {/* Legal Footer for Google OAuth Compliance */}
       <div className="w-full text-center py-6 mt-auto">
-        <p className="text-xs text-slate-500">
-          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-slate-400 transition-colors">Privacy Policy</a>
+        <p className="text-xs text-slate-500 max-w-sm mx-auto mb-3 px-4 leading-relaxed" suppressHydrationWarning>
+          <strong>{t('appSubtitle', 'AI Food Quality Analyzer')}</strong><br/>
+          {t('appDescription', 'Point your camera at raw food or groceries to instantly evaluate freshness and shelf-life using AI.')}
+        </p>
+        <p className="text-xs text-slate-500" suppressHydrationWarning>
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-slate-400 transition-colors">
+            {t('privacyPolicy', 'Privacy Policy')}
+          </a>
           {" • "}
-          <a href="/terms" target="_blank" rel="noopener noreferrer" className="hover:text-slate-400 transition-colors">Terms of Service</a>
+          <a href="/terms" target="_blank" rel="noopener noreferrer" className="hover:text-slate-400 transition-colors">
+            {t('termsOfService', 'Terms of Service')}
+          </a>
         </p>
       </div>
     </main>
