@@ -135,7 +135,7 @@ export default function Home() {
       <VirtualFridgeModal isOpen={isFridgeOpen} onClose={() => setIsFridgeOpen(false)} />
       <SubscriptionModal isOpen={isSubscriptionModalOpen} onClose={() => setIsSubscriptionModalOpen(false)} onUpgrade={handleUpgrade} />
 
-      <div className="w-full max-w-md relative flex flex-col items-center mt-16">
+      <div className="w-full max-w-md relative flex flex-col items-center mt-20 mb-8">
 
         {/* Error State View */}
         {cameraError && (
@@ -157,7 +157,7 @@ export default function Home() {
         {/* Captured Result View */}
         {capturedImage && (
           <div className="relative w-full flex flex-col gap-6 pb-10">
-            <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border border-slate-800">
+            <div className="relative w-full h-[65vh] min-h-[450px] max-h-[600px] rounded-3xl overflow-hidden shadow-2xl border border-slate-800 shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={capturedImage} alt={t('capturedFood')} className="w-full h-full object-cover" />
 
@@ -170,20 +170,20 @@ export default function Home() {
 
             {/* AI Analysis Result Card */}
             {analysisResult && (
-              <AnalysisResultCard 
-                analysisResult={analysisResult} 
-                onAddToFridge={handleAddToFridge} 
-                t={t} 
+              <AnalysisResultCard
+                analysisResult={analysisResult}
+                onAddToFridge={handleAddToFridge}
+                t={t}
               />
             )}
 
             {/* Action Buttons */}
-            <ActionButtons 
-              hasResult={!!analysisResult} 
-              isScanning={isScanning} 
-              onRetake={handleRetake} 
-              onAnalyze={analyzeFood} 
-              t={t} 
+            <ActionButtons
+              hasResult={!!analysisResult}
+              isScanning={isScanning}
+              onRetake={handleRetake}
+              onAnalyze={analyzeFood}
+              t={t}
             />
           </div>
         )}
@@ -192,9 +192,9 @@ export default function Home() {
       </div>
 
       {/* Legal Footer for Google OAuth Compliance */}
-      <div className="w-full text-center py-6 mt-auto">
-        <p className="text-xs text-slate-500 max-w-sm mx-auto mb-3 px-4 leading-relaxed" suppressHydrationWarning>
-          <strong>{t('appSubtitle', 'AI Food Quality Analyzer')}</strong><br/>
+      <div className="w-full text-center py-10 mt-auto">
+        <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4 px-4 leading-relaxed" suppressHydrationWarning>
+          <strong>{t('appSubtitle', 'AI Food Quality Analyzer')}</strong><br />
           {t('appDescription', 'Point your camera at raw food or groceries to instantly evaluate freshness and shelf-life using AI.')}
         </p>
         <p className="text-xs text-slate-500" suppressHydrationWarning>
